@@ -1,3 +1,9 @@
+---
+slug: introduction
+lang: en
+title: Introduction
+---
+
 # Substrate Recipes 🍴😋🍴
 
 _A Hands-On Cookbook for Aspiring Blockchain Chefs_
