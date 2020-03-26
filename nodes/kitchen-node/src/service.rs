@@ -99,7 +99,8 @@ pub fn new_full(config: Configuration<GenesisConfig>)
 
 	// Initialize seed for signing transaction using off-chain workers
 	//   We only add this part of code if we decide to run with feature `ocw`
-	if cfg!(feature = "ocw") {
+	#[cfg(feature = "ocw")]
+	{
 		if let Some(seed) = config.dev_key_seed.clone() {
 			service
 				.keystore()

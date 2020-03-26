@@ -315,8 +315,8 @@ impl linked_map::Trait for Runtime {
 #[cfg(feature = "ocw")]
 pub use offchain_demo;
 
-	/// Payload data to be signed when making signed transaction from off-chain workers,
-	///   inside `create_transaction` function.
+/// Payload data to be signed when making signed transaction from off-chain workers,
+///   inside `create_transaction` function.
 #[cfg(feature = "ocw")]
 pub type SignedPayload = generic::SignedPayload<Call, SignedExtra>;
 
