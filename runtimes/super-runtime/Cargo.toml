@@ -23,7 +23,7 @@ generic-event = { path = "../../pallets/generic-event", default-features = false
 hello-substrate = { path = "../../pallets/hello-substrate", default-features = false }
 last-caller = { path = "../../pallets/last-caller", default-features = false }
 linked-map = { path = "../../pallets/linked-map", default-features = false }
-offchain-demo = { path = "../../pallets/offchain-demo", default-features = false }
+offchain-demo = { path = "../../pallets/offchain-demo", default-features = false, optional = true }
 ringbuffer-queue = { path = "../../pallets/ringbuffer-queue", default_features = false }
 randomness = { path = "../../pallets/randomness", default_features = false }
 simple-event = { path = "../../pallets/simple-event", default_features = false }
@@ -170,6 +170,10 @@ wasm-builder-runner = { package = "substrate-wasm-builder-runner", version = "1.
 
 [features]
 default = ["std"]
+ocw = [
+	"std",
+	"offchain-demo/std",
+]
 std = [
 	# Substrate dependencies alphabetically
 	"babe/std",
@@ -213,7 +217,6 @@ std = [
 	"hello-substrate/std",
 	"last-caller/std",
 	"linked-map/std",
-	"offchain-demo/std",
 	"simple-event/std",
 	"simple-map/std",
 	"single-value/std",

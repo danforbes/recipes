@@ -69,8 +69,6 @@ pub type Hash = H256;
 /// Digest item type.
 pub type DigestItem = generic::DigestItem<Hash>;
 
-pub use offchain_demo;
-
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
 /// the specifics of the runtime. They can then be made to be agnostic over specific formats
 /// of data like extrinsics, allowing for them to continue syncing the network through upgrades
@@ -313,18 +311,28 @@ impl linked_map::Trait for Runtime {
 	type Event = Event;
 }
 
-// For offchain_demo
+// For offchain_demo. Enable the `ocw` feature flag
+#[cfg(feature = "ocw")]
+pub use offchain_demo;
 
+	/// Payload data to be signed when making signed transaction from off-chain workers,
+	///   inside `create_transaction` function.
+#[cfg(feature = "ocw")]
+pub type SignedPayload = generic::SignedPayload<Call, SignedExtra>;
+
+#[cfg(feature = "ocw")]
 parameter_types! {
 	pub const GracePeriod: BlockNumber = 2;
 }
 
+#[cfg(feature = "ocw")]
 type SubmitTransaction = system::offchain::TransactionSubmitter<
 	offchain_demo::crypto::Public,
 	Runtime,
 	UncheckedExtrinsic
 >;
 
+#[cfg(feature = "ocw")]
 impl offchain_demo::Trait for Runtime {
 	type Call = Call;
 	type Event = Event;
@@ -333,6 +341,7 @@ impl offchain_demo::Trait for Runtime {
 	type GracePeriod = GracePeriod;
 }
 
+#[cfg(feature = "ocw")]
 impl system::offchain::CreateTransaction<Runtime, UncheckedExtrinsic> for Runtime {
 	type Public = <Signature as Verify>::Signer;
 	type Signature = Signature;
@@ -367,8 +376,6 @@ impl system::offchain::CreateTransaction<Runtime, UncheckedExtrinsic> for Runtim
 	}
 }
 
-// end of offchain_demo setting
-
 impl ringbuffer_queue::Trait for Runtime {
 	type Event = Event;
 }
@@ -401,6 +408,7 @@ impl vec_set::Trait for Runtime {
 	type Event = Event;
 }
 
+#[cfg(not(feature = "ocw"))]
 construct_runtime!(
 	pub enum Runtime where
 		Block = Block,
@@ -430,7 +438,6 @@ construct_runtime!(
 		LastCaller1: last_caller::<Instance1>::{Module, Call, Storage, Event<T>},
 		LastCaller2: last_caller::<Instance2>::{Module, Call, Storage, Event<T>},
 		LinkedMap: linked_map::{Module, Call, Storage, Event<T>},
-		OffchainDemo: offchain_demo::{Module, Call, Storage, Event<T>, ValidateUnsigned},
 		RingbufferQueue: ringbuffer_queue::{Module, Call, Storage, Event<T>},
 		RandomnessDemo: randomness::{Module, Call, Storage, Event},
 		SimpleEvent: simple_event::{Module, Call, Event},
@@ -439,6 +446,50 @@ construct_runtime!(
 		StorageCache: storage_cache::{Module, Call, Storage, Event<T>},
 		StructStorage: struct_storage::{Module, Call, Storage, Event<T>},
 		VecSet: vec_set::{Module, Call, Storage, Event<T>},
+	}
+);
+
+#[cfg(feature = "ocw")]
+construct_runtime!(
+	pub enum Runtime where
+		Block = Block,
+		NodeBlock = opaque::Block,
+		UncheckedExtrinsic = UncheckedExtrinsic
+	{
+		System: system::{Module, Call, Storage, Config, Event<T>},
+		Timestamp: timestamp::{Module, Call, Storage, Inherent},
+		Babe: babe::{Module, Call, Storage, Config, Inherent(Timestamp)},
+		Grandpa: grandpa::{Module, Call, Storage, Config, Event},
+		Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
+		RandomnessCollectiveFlip: randomness_collective_flip::{Module, Call, Storage},
+		Sudo: sudo::{Module, Call, Config<T>, Storage, Event<T>},
+		TransactionPayment: transaction_payment::{Module, Storage},
+		// The Recipe Pallets
+		AddingMachine: adding_machine::{Module, Call, Storage},
+		BasicToken: basic_token::{Module, Call, Storage, Event<T>},
+		Charity: charity::{Module, Call, Storage, Event<T>},
+		CheckMembership: check_membership::{Module, Call, Storage, Event<T>},
+		ConstantConfig: constant_config::{Module, Call, Storage, Event},
+		DefaultInstance1: default_instance::{Module, Call, Storage, Event<T>},
+		DefaultInstance2: default_instance::<Instance2>::{Module, Call, Storage, Event<T>},
+		DoubleMap: double_map::{Module, Call, Storage, Event<T>},
+		ExecutionSchedule: execution_schedule::{Module, Call, Storage, Event<T>},
+		HelloSubstrate: hello_substrate::{Module, Call},
+		GenericEvent: generic_event::{Module, Call, Event<T>},
+		LastCaller1: last_caller::<Instance1>::{Module, Call, Storage, Event<T>},
+		LastCaller2: last_caller::<Instance2>::{Module, Call, Storage, Event<T>},
+		LinkedMap: linked_map::{Module, Call, Storage, Event<T>},
+		RingbufferQueue: ringbuffer_queue::{Module, Call, Storage, Event<T>},
+		RandomnessDemo: randomness::{Module, Call, Storage, Event},
+		SimpleEvent: simple_event::{Module, Call, Event},
+		SimpleMap: simple_map::{Module, Call, Storage, Event<T>},
+		SingleValue: single_value::{Module, Call, Storage},
+		StorageCache: storage_cache::{Module, Call, Storage, Event<T>},
+		StructStorage: struct_storage::{Module, Call, Storage, Event<T>},
+		VecSet: vec_set::{Module, Call, Storage, Event<T>},
+
+		// Enable `ocw` feature flag to include `OffchainDemo`
+		OffchainDemo: offchain_demo::{Module, Call, Storage, Event<T>, ValidateUnsigned},
 	}
 );
 
@@ -467,9 +518,6 @@ pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, Call, Signatu
 pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, Call, SignedExtra>;
 /// Executive: handles dispatch to the various pallets.
 pub type Executive = executive::Executive<Runtime, Block, system::ChainContext<Runtime>, Runtime, AllModules>;
-/// Payload data to be signed when making signed transaction from off-chain workers,
-///   inside `create_transaction` function.
-pub type SignedPayload = generic::SignedPayload<Call, SignedExtra>;
 
 impl_runtime_apis! {
 	impl sp_api::Core<Block> for Runtime {

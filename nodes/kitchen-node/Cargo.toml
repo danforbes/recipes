@@ -54,3 +54,6 @@ vergen = "3.0.4"
 git = 'https://github.com/paritytech/substrate.git'
 package = 'substrate-build-script-utils'
 tag = 'v2.0.0-alpha.3'
+
+[features]
+ocw = []
