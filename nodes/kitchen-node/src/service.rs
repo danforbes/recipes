@@ -78,6 +78,7 @@ pub fn new_full(config: Configuration<GenesisConfig>)
 	let force_authoring = config.force_authoring;
 	let name = config.name.clone();
 	let disable_grandpa = config.disable_grandpa;
+	let _dev_key_seed = config.dev_key_seed.clone();
 
 	// sentry nodes announce themselves as authorities to the network
 	// and should run the same protocols authorities do, but it should
@@ -101,7 +102,7 @@ pub fn new_full(config: Configuration<GenesisConfig>)
 	//   We only add this part of code if we decide to run with feature `ocw`
 	#[cfg(feature = "ocw")]
 	{
-		if let Some(seed) = config.dev_key_seed.clone() {
+		if let Some(seed) = _dev_key_seed {
 			service
 				.keystore()
 				.write()

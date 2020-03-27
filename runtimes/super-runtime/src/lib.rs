@@ -20,7 +20,6 @@ use sp_runtime::{
 };
 use sp_runtime::traits::{
 	BlakeTwo256, Block as BlockT, IdentityLookup, ConvertInto, Verify, IdentifyAccount,
-	SaturatedConversion
 };
 use sp_api::impl_runtime_apis;
 use babe::SameAuthoritiesForever;

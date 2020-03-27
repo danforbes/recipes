@@ -56,4 +56,6 @@ package = 'substrate-build-script-utils'
 tag = 'v2.0.0-alpha.3'
 
 [features]
-ocw = []
+ocw = [
+	"runtime/ocw"
+]
